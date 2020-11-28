@@ -1,26 +1,46 @@
+<!-- eslint-disable -->
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <span v-for="confe in confetti" :style="{ 'top': `${confe.y}%`, 'left': `${confe.x}%`, 'transform': 'scale(' + confe.r + ')' }">{{ confe.character }}</span>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
-
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+* {
+  overflow: hidden;
+}
+
+span {
+  position: absolute;
+  font-size: 100px;
 }
 </style>
+
+<script>
+
+export default {
+  data: () => ({
+    confetti: []
+  }),
+  mounted() {
+    const characters = ['🥳', '🎉', '✨'];
+    this.confetti = new Array(100).fill().map((_, i) => ({
+      character: characters[i % characters.length],
+      x: Math.random() * 100,
+      y: 20 - Math.random() * 100,
+      r: 0.1 + Math.random() * 1
+    })).sort((a,b) => a.r - b.r);
+
+    function loop() {
+      requestAnimationFrame(loop.bind(this));
+      this.confetti = this.confetti.map(emoji => {
+        emoji.y += 0.7 * emoji.r;
+        if (emoji.y > 120) {
+          emoji.y = -20;
+          emoji.x = Math.random() * 100
+        }
+        return emoji;
+      });
+    }
+    loop.bind(this)();
+  }
+};
+</script>
